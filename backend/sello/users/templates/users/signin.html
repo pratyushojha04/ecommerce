@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Sign In - Sello</title>
+  {% load static %}
+  <link rel="stylesheet" href="{% static 'users/css/signin.css' %}">
+</head>
+<body>
+  <div class="signin-container">
+    <h1>Sign In</h1>
+    <form id="signin-form">
+      <div class="form-group">
+        <label for="email">Email:</label>
+        <input type="email" id="email" name="email" placeholder="Enter your email" required>
+      </div>
+      <div class="form-group">
+        <label for="password">Password:</label>
+        <input type="password" id="password" name="password" placeholder="Enter your password" required>
+      </div>
+      <button type="submit" class="submit-btn">Sign In</button>
+      <a href="{% url 'users:signup' %}">Don't have an account? Sign Up</a>
+    </form>
+    <p id="response-message"></p>
+  </div>
+
+  <script>
+    const form = document.getElementById('signin-form');
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const email = document.getElementById('email').value;
+      const password = document.getElementById('password').value;
+
+      const response = await fetch('/users/signin/', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'X-CSRFToken': '{{ csrf_token }}',
+        },
+        body: JSON.stringify({ email, password }),
+      });
+
+      const data = await response.json();
+      const messageEl = document.getElementById('response-message');
+
+      if (response.ok) {
+        messageEl.textContent = 'Login successful!';
+        messageEl.style.color = 'green';
+        console.log('Token:', data.token);
+      } else {
+        messageEl.textContent = data.error;
+        messageEl.style.color = 'red';
+      }
+    });
+  </script>
+</body>
+</html>
