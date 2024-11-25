@@ -5,6 +5,10 @@ Django settings for sello project.
 from pathlib import Path
 from datetime import timedelta
 import os
+from dotenv import load_dotenv
+
+# Load environment variables
+load_dotenv()
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -30,6 +34,8 @@ INSTALLED_APPS = [
     'rest_framework_simplejwt',
     'rest_framework_simplejwt.token_blacklist',
     'users',
+    'profiles',
+    'products',
 ]
 
 MIDDLEWARE = [
@@ -104,13 +110,15 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 # Custom user model
 AUTH_USER_MODEL = 'users.User'
 
-# CORS settings
+# CORS Settings
 CORS_ALLOW_ALL_ORIGINS = True
-# CORS_ALLOWED_ORIGINS = [
-#     "http://localhost:3000",
-#     "http://127.0.0.1:3000",
-# ]
 CORS_ALLOW_CREDENTIALS = True
+
+CORS_ALLOWED_ORIGINS = [
+    "http://localhost:3000",
+    "http://127.0.0.1:3000",
+]
+
 CORS_ALLOW_METHODS = [
     'DELETE',
     'GET',
@@ -119,6 +127,7 @@ CORS_ALLOW_METHODS = [
     'POST',
     'PUT',
 ]
+
 CORS_ALLOW_HEADERS = [
     'accept',
     'accept-encoding',
@@ -138,6 +147,11 @@ REST_FRAMEWORK = {
     ),
     'DEFAULT_PERMISSION_CLASSES': [
         'rest_framework.permissions.IsAuthenticated',
+    ],
+    'DEFAULT_PARSER_CLASSES': [
+        'rest_framework.parsers.JSONParser',
+        'rest_framework.parsers.FormParser',
+        'rest_framework.parsers.MultiPartParser',
     ],
 }
 
@@ -166,28 +180,20 @@ SIMPLE_JWT = {
 LOGGING = {
     'version': 1,
     'disable_existing_loggers': False,
-    'formatters': {
-        'verbose': {
-            'format': '{levelname} {asctime} {module} {process:d} {thread:d} {message}',
-            'style': '{',
-        },
-    },
     'handlers': {
         'console': {
             'class': 'logging.StreamHandler',
-            'formatter': 'verbose',
         },
+    },
+    'root': {
+        'handlers': ['console'],
+        'level': 'INFO',
     },
     'loggers': {
         'django': {
             'handlers': ['console'],
             'level': 'INFO',
-            'propagate': True,
-        },
-        'users': {
-            'handlers': ['console'],
-            'level': 'DEBUG',
-            'propagate': True,
+            'propagate': False,
         },
     },
 }
